@@ -6,13 +6,24 @@ const { generarJWT } = require('../helpers/jwt');
 
 const getUsuarios = async( req, res ) => {
 
-    const usuarios = await Usuario.find({}, 'nombre email role google');
+    const desde = Number(req.query.desde) || 0;
+    
+    const [ usuarios, total ] = await Promise.all([     // El método Promise.all(iterable) devuelve una promesa que termina correctamente  
+        Usuario                                         // cuando todas las promesas en el argumento iterable han sido concluídas con éxito
+            .find({}, 'nombre email role google img')   //, o bien rechaza la petición con el motivo pasado por la primera promesa que es rechazada.
+            .skip( desde )
+            .limit( 5 ),
+
+        Usuario.countDocuments()
+    ])
 
     res.json({
         ok:true,
         usuarios,
-        uid: req.uid    // Podriamos poner el uid de la persona que hizo la petición getUsuarios
+        uid: req.uid,   // Podriamos poner el uid de la persona que hizo la petición getUsuarios
                         // Al validar el JWT en la ruta, el uid se introdujo en la req
+    
+        total
     });
 }
 
