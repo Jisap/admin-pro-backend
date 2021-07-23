@@ -1,7 +1,8 @@
 const { response } = require('express');
-const usuario = require('../models/usuario');
+const Usuario = require('../models/usuario');
 const bcrypt = require('bcryptjs');
 const { generarJWT } = require('../helpers/jwt');
+const { googleVerify } = require('../helpers/google-verify');
 
 const login = async( req, res = response ) => {
 
@@ -9,7 +10,7 @@ const login = async( req, res = response ) => {
 
     try {
         
-        const usuarioDB = await usuario.findOne({ email }); // Buscamos un usuario por el email
+        const usuarioDB = await Usuario.findOne({ email }); // Buscamos un usuario por el email
 
         // Verificar email
         if(!usuarioDB) {
@@ -46,6 +47,55 @@ const login = async( req, res = response ) => {
     }
 }
 
+const googleSignIn = async ( req, res=response ) => {
+
+    const googleToken =req.body.token;                          // Recuperamos el token del body
+
+    
+    
+    try {
+        
+        const { name, email, picture } = await googleVerify( googleToken );                  // Verificamos su validez
+        
+        const usuarioDB = await Usuario.findOne({ email });         // Buscamos un usuario en bd según un email
+        let usuario;
+    
+        if( !usuarioDB ){                                           // Si no existe ese usuario 
+            usuario = new Usuario({                                 // creamos uno nuevo
+                nombre: name,
+                email, 
+                password: '@@@',
+                img: picture,
+                google: true
+            });
+        }else{                                                      // Pero si si existe
+            usuario = usuarioDB;                                    // usuario será igual al usuario de bd
+            usuario.google = true;
+        }
+
+        await usuario.save();                                       // Grabamos en bd
+
+        const token = await generarJWT( usuario.id );               // Generamos el token
+
+        res.json({
+            ok:true,
+            msg: 'Google Signin',
+            token
+        });
+
+    } catch (error) {
+        
+        res.status( 401 ).json({
+            ok: false,
+            msg: 'Token no es correcto'
+        });
+    }
+
+
+
+}
+
 module.exports = {
-    login
+    login,
+    googleSignIn
 }
