@@ -13,9 +13,8 @@ const googleVerify = async( token ) => {
   });
 
   const payload = ticket.getPayload();        // si todo va bien se genera un payload o carga útil.  
-  const userid = payload['sub'];              // De ese payload se obtiene un userid, un name, email y un picture para el frontend  
-  
-  console.log( payload );
+                                              // De ese payload se obtiene un name, email y un picture para el frontend  
+
   const { name, email, picture } = payload;
 
   return { name, email, picture };

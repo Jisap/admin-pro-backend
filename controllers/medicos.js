@@ -42,15 +42,78 @@ const crearMedico = async( req, res=response ) => {
 
 }
 
-const actualizarMedico = ( req, res=response ) => {
+const actualizarMedico = async( req, res=response ) => {
+
+    const id = req.params.id;   // La id del médico que queremos actualizar viene en los params
+    const uid = req.uid         // El uid de la persona que actualiza viene del token a través de validarJWT de las rutas de actualizar medicos
+
+    try {
+        
+        const medico = await Medico.findById( id ); // Buscamos el medico por id
+
+        if( !medico ){                                // Sino existe msg de error
+            return res.status(404).json({
+                ok:true,
+                msg: 'Medico no encontrado'
+            })
+        }
+
+        const cambiosMedico = { 
+            ...req.body,            // Cambios en el nombre y hospital del medico
+            usuario: uid            // Usuario que ha realizado los cambios
+        }
+
+        const medicoActualizado = await Medico.findByIdAndUpdate( id, cambiosMedico, { new: true } ); // Actualización en Bd
+
+        res.json({
+            ok:true,
+            medico: medicoActualizado
+        })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        })
+    }
+}
+
+const borrarMedico = async( req, res=response ) => {
+
+    const id = req.params.id;   // La id del medico viene en los params
+
+    try {
+        
+        const medico = await Medico.findById( id ); // Buscamos el medico por id
+
+        if( !medico ){                                // Sino existe msg de error
+            return res.status(404).json({
+                ok:true,
+                msg: 'Médico no encontrado'
+            })
+        }
+
+        await Medico.findByIdAndDelete ( id );
+
+        res.json({
+            ok:true,
+            msg: 'Médico borrado'
+        });
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        })
+    }
+
 
     res.json({
         ok:true,
-        msg: 'actualizarMedico'
+        msg: 'borrarHospital'
     })
-}
-
-const borrarMedico = ( req, res=response ) => {
 
     res.json({
         ok:true,

@@ -43,15 +43,74 @@ const crearHospital = async( req, res=response ) => {
 
 }
 
-const actualizarHospital = ( req, res=response ) => {
+const actualizarHospital = async( req, res=response ) => {
 
-    res.json({
-        ok:true,
-        msg: 'actualizarHospital'
-    })
+    const id = req.params.id;   // La id del hospital viene en los params
+    const uid = req.uid         // El uid viene del token a través de validarJWT en las rutas de actualizar hospitales
+
+    try {
+        
+        const hospital = await Hospital.findById( id ); // Buscamos el hospital por id
+
+        if( !hospital ){                                // Sino existe msg de error
+            return res.status(404).json({
+                ok:true,
+                msg: 'Hospital no encontrado'
+            })
+        }
+
+        const cambiosHospital = { 
+            ...req.body,            // Cambios en el nombre del hospitales
+            usuario: uid            // Usuario que ha realizado los cambios
+        }
+
+        const hospitalActualizado = await Hospital.findByIdAndUpdate( id, cambiosHospital, { new: true } ); // Actualización en Bd
+
+        res.json({
+            ok:true,
+            hospital: hospitalActualizado
+        })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        })
+    }
+
 }
 
-const borrarHospital = ( req, res=response ) => {
+const borrarHospital = async( req, res=response ) => {
+
+    const id = req.params.id;   // La id del hospital viene en los params
+
+    try {
+        
+        const hospital = await Hospital.findById( id ); // Buscamos el hospital por id
+
+        if( !hospital ){                                // Sino existe msg de error
+            return res.status(404).json({
+                ok:true,
+                msg: 'Hospital no encontrado'
+            })
+        }
+
+        await Hospital.findByIdAndDelete ( id );
+
+        res.json({
+            ok:true,
+            msg: 'Hospital eliminado'
+        });
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        })
+    }
+
 
     res.json({
         ok:true,

@@ -49,15 +49,13 @@ const login = async( req, res = response ) => {
 
 const googleSignIn = async ( req, res=response ) => {
 
-    const googleToken =req.body.token;                          // Recuperamos el token del body
+    const googleToken =req.body.token;                          // Recuperamos el token del body, este token lo ha generado el frontend (public.html)
 
-    
-    
     try {
         
         const { name, email, picture } = await googleVerify( googleToken );                  // Verificamos su validez
         
-        const usuarioDB = await Usuario.findOne({ email });         // Buscamos un usuario en bd según un email
+        const usuarioDB = await Usuario.findOne({ email });         // Buscamos un usuario en bd según un email generado por google
         let usuario;
     
         if( !usuarioDB ){                                           // Si no existe ese usuario 
@@ -73,7 +71,7 @@ const googleSignIn = async ( req, res=response ) => {
             usuario.google = true;
         }
 
-        await usuario.save();                                       // Grabamos en bd
+        await usuario.save();                                       // Grabamos en bd el usuario encontrado
 
         const token = await generarJWT( usuario.id );               // Generamos el token
 
@@ -90,12 +88,22 @@ const googleSignIn = async ( req, res=response ) => {
             msg: 'Token no es correcto'
         });
     }
+}
 
+const renewToken = async( req, res=response ) => {
 
+    const uid = req.uid                                 // En los headers ponemos el token a renovar -> routes/auth -> validarJWT -> req.uid = uid 
 
+    const token = await generarJWT( uid );              // Generamos un nuevo token con ese uid
+
+    res.json({
+        ok: true,
+        token                                           // Devolvemos ese token en la res.
+    })
 }
 
 module.exports = {
     login,
-    googleSignIn
+    googleSignIn,
+    renewToken
 }
