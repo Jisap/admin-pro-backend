@@ -94,11 +94,14 @@ const renewToken = async( req, res=response ) => {
 
     const uid = req.uid                                 // En los headers ponemos el token a renovar -> routes/auth -> validarJWT -> req.uid = uid 
 
+    const usuario = await Usuario.findById( uid );      // buscamos el usuario según ese uid
+
     const token = await generarJWT( uid );              // Generamos un nuevo token con ese uid
 
     res.json({
         ok: true,
-        token                                           // Devolvemos ese token en la res.
+        token,                                           // Devolvemos ese token  y el usuario en la res.
+        usuario
     })
 }
 

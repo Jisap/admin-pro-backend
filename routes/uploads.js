@@ -22,7 +22,7 @@ router.put( '/:tipo/:id',                           // tipo puede ser medico, us
 
 router.get( '/:tipo/:foto',                           // tipo puede ser medico, usuario u hospital // foto es el nombre de la imagen que queremos actualizar
     [
-       validarJWT, // req.uid = uid;
+       //validarJWT, // req.uid = uid;
        check('tipo', 'El tipo de la actualización es necesario').not().isEmpty(),
        validarCampos                                                
     ],

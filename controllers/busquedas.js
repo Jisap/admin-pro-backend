@@ -3,11 +3,11 @@ const Usuario = require('../models/usuario');
 const Hospital = require('../models/hospital');
 const Medico = require('../models/medico')
 
-const getTodo = async( req, res=response ) => {
+const getTodo = async( req, res=response ) => { //api/todo/:busqueda
 
     //const uid = req.params.id;  
     const busqueda = req.params.busqueda;
-    const regex = new RegExp( busqueda, 'i'); // Hace la busqueda más flexible
+    const regex = new RegExp( busqueda, 'i'); // La expresión regular hace la busqueda más flexible
 
     const [ usuarios, hospitales, medicos ] = await Promise.all([ 
 
@@ -25,11 +25,11 @@ const getTodo = async( req, res=response ) => {
     })
 }
 
-const getDocumentosColeccion = async( req, res=response ) => {
+const getDocumentosColeccion = async( req, res=response ) => {  // api/todo/coleccion/:tabla/:busqueda
 
     const tabla = req.params.tabla;
     const busqueda = req.params.busqueda;
-    const regex = new RegExp( busqueda, 'i'); // Hace la busqueda más flexible
+    const regex = new RegExp( busqueda, 'i'); // La expresión regular hace la busqueda más flexible
     let data = [];
 
     switch ( tabla ) {

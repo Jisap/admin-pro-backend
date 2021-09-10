@@ -112,10 +112,10 @@ const borrarHospital = async( req, res=response ) => {
     }
 
 
-    res.json({
-        ok:true,
-        msg: 'borrarHospital'
-    })
+    // res.json({
+    //     ok:true,
+    //     msg: 'borrarHospital'
+    // })
 }
 
 
