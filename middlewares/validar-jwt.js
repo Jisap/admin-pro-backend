@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-const validarJWT = ( req, res, next ) => {
-
+const validarJWT = ( req, res, next ) => {                         // Este midleware verfica la integridad del token que viene en la petición. 
+                                                                   // Sea cual sea la petición llevará el token del usuario que la realiza.
     //Leer el token de los headers en
     const token = req.header('x-token');
     
@@ -27,4 +27,4 @@ const validarJWT = ( req, res, next ) => {
 
 }
 
-module.exports = validarJWT;
+module.exports = validarJWT
